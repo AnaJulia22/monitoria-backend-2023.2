@@ -1,19 +1,37 @@
 import { Router } from "express";
 import { prisma } from "../prisma.js";
 import * as uuid from 'uuid';
+import express from "express";
+import multer from 'multer';
+
 
 export const postRouter = Router();
 
-postRouter.post("", async (req, res) => {
+postRouter.use(express.json());
+postRouter.use(express.urlencoded({ extended: true }));
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, '/post');
+    },
+    filename: function (req, file, cb) {
+
+      cb(null, file.originalname);
+    }
+  });
+  
+  const upload = multer({ storage: storage });
+
+postRouter.post("", upload.single('filename'), async (req, res) => {
     try {
       const { description, authorId } = req.body;
-      //b8fddb27-7845-455b-8eb2-75ca481ab403
-      //const imagemUrl = req.file.filename;
+      const filename = req.file.filename;
   
       const newPost = await prisma.post.create({
         data: {
           id: uuid.v4(),
           description,
+          filename,  
           authorId,
           createdAt: new Date()
         },
