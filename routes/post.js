@@ -4,7 +4,6 @@ import * as uuid from 'uuid';
 import express from "express";
 import multer from 'multer';
 
-
 export const postRouter = Router();
 
 postRouter.use(express.json());
@@ -26,6 +25,9 @@ postRouter.post("", upload.single('filename'), async (req, res) => {
     try {
       const { description, authorId } = req.body;
       const filename = req.file.filename;
+      const currentDate = new Date();
+      const localTime = new Date(currentDate.getTime() - (currentDate.getTimezoneOffset() * 60000));
+      const localDateTimeISO = localTime.toISOString();
   
       const newPost = await prisma.post.create({
         data: {
@@ -33,8 +35,8 @@ postRouter.post("", upload.single('filename'), async (req, res) => {
           description,
           filename,  
           authorId,
-          createdAt: new Date()
-        },
+          createdAt: localDateTimeISO
+        }
       });
   
       res.json(newPost);
