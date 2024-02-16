@@ -12,15 +12,15 @@ postRouter.use(express.urlencoded({ extended: true }));
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, '/post');
+      cb(null, 'uploads/');
     },
     filename: function (req, file, cb) {
 
       cb(null, file.originalname);
     }
-  });
+});
   
-  const upload = multer({ storage: storage });
+const upload = multer({ storage: storage });
 
 postRouter.post("", upload.single('filename'), async (req, res) => {
     try {
